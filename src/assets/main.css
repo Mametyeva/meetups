@@ -1,0 +1,128 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+}
+
+.card-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.card-icon img {
+  margin-bottom: 5px;
+}
+
+ion-icon {
+  color: #5E35B1;
+  --ionicon-stroke-width: 40px;
+  font-size: 22px;
+  min-width: 22px;
+}
+
+h1 {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100vw;
+}
+
+h6 {
+  font-size: 1.35em;
+  line-height: 1.55em;
+}
+
+.white-text {
+  color: white;
+}
+
+.search {
+  min-width: 188px;
+}
+
+.v-select {
+  min-width: 124px;
+}
+
+footer {
+  max-height: 70px;
+}
+
+.photo {
+  max-height: 220px;
+}
+
+.search .v-field__field::after {
+  position: relative;
+  margin-top: 15px;
+  content: "";
+  height: 24px;
+  width: 24px;
+  background-image: url("/public/search-outline.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+}
+
+.search:hover .v-field__field::after {
+  opacity: 1;
+}
+
+.toggle-btns {
+  text-align: left;
+}
+
+/* .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
+  gap: 10px;
+} */
+
+.v-toolbar__content {
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media (max-width: 370px) {
+  .toggle-btns .v-btn-group.v-btn-toggle {
+    display: block;
+    height: auto;
+  }
+
+  .toggle-btns .v-btn.v-btn--variant-text {
+    display: block;
+    min-height: 42px;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+
+  .v-select {
+    min-width: 150px;
+  }
+}
