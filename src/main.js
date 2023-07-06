@@ -6,9 +6,6 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-/*import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/css/bootstrap-reboot.css' */
-
 import './assets/main.css'
 
 const vuetify = createVuetify({

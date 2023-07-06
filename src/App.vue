@@ -49,7 +49,7 @@ const inputValue = ref(null)
 const filteredItems = computed(() => {
   if (inputValue.value) {
     return items.value.filter(
-      (item) => item.name.toLowerCase().startsWith(inputValue.value))
+      (item) => item.name.startsWith(inputValue.value) || item.name.toLowerCase().startsWith(inputValue.value))
   }
   return items.value
 })
@@ -94,31 +94,19 @@ const formatDate = function(date) {
   <v-app class="d-block text-center bg-grey-lighten-5 mx-auto">
     <v-card class="mb-5">
       <h1 class="pa-2">Meetups</h1>
-<!--       <v-tabs v-model="tab" color="deep-purple-darken-4" align-tabs="center">
-        <v-tab :value="1" disabled>Вход</v-tab>
-        <v-tab :value="2" disabled>Регистрация</v-tab>
-        <v-tab :value="3">Создать митап</v-tab>
-      </v-tabs> -->
-      <v-toolbar color="transparent">
-        <v-toolbar-items>
-          <v-btn disabled>Вход</v-btn>
-          <v-btn disabled>Регистрация</v-btn>
-          <v-btn disabled>Создать митап</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
     </v-card>
 
     <v-row>
       <v-col cols="12" md="10" class="mx-auto">
         <v-container fluid>
-          <v-row class="justify-space-between align-center flex-wrap">
+          <v-row class="justify-space-between align-center flex-wrap tools">
             <v-col class="toggle-btns">
               <v-btn-toggle color="deep-purple-darken-4" group mandatory>
-                <v-btn class="mr-3" variant="text" rounded="xl" value="all"
+                <v-btn variant="text" rounded="xl" value="all"
                   @click.prevent.stop="filterBy('allDate')">Все</v-btn>
-                <v-btn class="mr-3" variant="text" rounded="xl" value="past"
+                <v-btn variant="text" rounded="xl" value="past"
                   @click.prevent.stop="filterBy('pastDate')">Прошедшие</v-btn>
-                <v-btn class="mr-3" variant="text" rounded="xl" value="future"
+                <v-btn variant="text" rounded="xl" value="future"
                   @click.prevent.stop="filterBy('futureDate')">Ожидаемые</v-btn>
               </v-btn-toggle>
             </v-col>
@@ -140,14 +128,14 @@ const formatDate = function(date) {
           </v-row>
 
           <v-card class="mb-3" v-for="item in filteredItems" :key="item.id">
-            <v-row class="align-center">
-              <v-col cols="12" md="6">
+            <v-row class="card align-center">
+              <v-col class="card-img" cols="12" md="6">
                 <v-img class="d-flex align-center pa-4 photo" cover :src="item.img"
                   gradient="to top right, rgba(100,115,201,.53), rgba(25,32,72,1)">
-                  <p class="text-h5 white-text font-weight-light">{{ item.name }}</p>
+                  <p class="text-h6 text-sm-h5 white-text font-weight-light">{{ item.name }}</p>
                 </v-img>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col class="card-content" cols="12" md="6">
                 <div class="text-left pa-3 pa-sm-5">
                   <v-card-text class="d-flex align-top align-lg-center py-1">
                     <ion-icon name="person-outline" class="pr-2 pr-sm-3"></ion-icon>
@@ -171,7 +159,7 @@ const formatDate = function(date) {
 
     <v-footer class="mt-5 pa-3" color="grey-darken-3">
       <v-row>
-        <v-col class="ml-auto" cols="1">
+        <v-col class="ml-auto" cols="auto">
           <div>&copy; {{ new Date().getFullYear() }}</div>
         </v-col>
       </v-row>

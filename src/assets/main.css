@@ -77,16 +77,10 @@ footer {
 .search:hover .v-field__field::after {
   opacity: 1;
 }
-
+ 
 .toggle-btns {
   text-align: left;
 }
-
-/* .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
-  gap: 10px;
-} */
 
 .v-toolbar__content {
   justify-content: center;
@@ -98,15 +92,40 @@ footer {
   }
 }
 
-@media (max-width: 370px) {
-  .toggle-btns .v-btn-group.v-btn-toggle {
-    display: block;
-    height: auto;
+@media (max-width: 960px) {
+  .card-content {
+    padding-bottom: 36px;
   }
 
+  .tools {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  
+  .tools .v-col {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
+@media (max-width: 600px) {
+  .toggle-btns {
+    text-align: center;
+  }
+
+  .toggle-btns .v-btn.v-btn--variant-text, .v-card .v-card-text {
+    font-size: 13px;
+  }
+
+  .photo {
+    max-height: 150px;
+  }
+}
+
+@media (max-width: 360px) {
   .toggle-btns .v-btn.v-btn--variant-text {
-    display: block;
-    min-height: 42px;
+    font-size: 12px;
+    padding: 8px 12px;
   }
 }
 
