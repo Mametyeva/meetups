@@ -88,6 +88,64 @@ const formatDate = function(date) {
 
   return `${day}.${month}.${year} ${hour}:${minutes}`
 }
+
+//Форма создания митапа
+const newTime = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
+const newName = ref('')
+const newAuthor = ref('')
+const newPlace = ref('')
+const newDate = ref([])
+let newImg
+
+const getImg = function(e) {
+  newImg = e.target.files[0];
+  return newImg
+}
+
+const fileURL = computed(() => {
+  return URL.createObjectURL(newImg)
+})
+
+const getDates = function() {
+ let currentDate = new Date();
+ for (let i = 0; i < 30; i++) {
+  let nextDate = currentDate.setDate(currentDate.getDate() + 1);
+  let year = new Date(nextDate).getFullYear().toString().slice(-2);
+  let month = new Date(nextDate).getMonth() + 1;
+  let day = new Date(nextDate).getDate();
+
+  month = month < 10 ? '0' + month : month;
+  day = day < 10 ? '0' + day : day;
+
+  let date = `${day}.${month}.${year}`
+  newDate.value.push(date)
+ }
+}
+
+let dayUTC
+const setDate = function(d) {
+  dayUTC = `20${d.split('.').reverse().join('-')}`;
+  return dayUTC
+}
+
+let timeUTC
+const setTime = function(t) {
+  timeUTC = `T${t}:00.000`;
+  return timeUTC
+}
+
+const newMeetup = function() {
+  let i = meetups.value.length;
+  let newM = {
+    id: i + 1,
+    img: fileURL,
+    name: newName.value,
+    author: newAuthor.value,
+    place: newPlace.value,
+    date: `${dayUTC}${timeUTC}`,
+  };
+  meetups.value.push(newM)
+}
 </script>
 
 <template>
@@ -95,10 +153,57 @@ const formatDate = function(date) {
     <v-card class="mb-5">
       <h1 class="pa-2">Meetups</h1>
     </v-card>
-
     <v-row>
       <v-col cols="12" md="10" class="mx-auto">
         <v-container fluid>
+          <form>
+          <v-row>
+          <v-btn @click="getDates()">Создать митап</v-btn>
+          <v-col cols="12">
+            <v-text-field
+              v-model="newName"
+              label="Название митапа"
+              placeholder="Название"
+              clearable
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="newAuthor"
+              label="Имя лектора"
+              placeholder="Фамилия Имя Отчество"
+              clearable
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="newPlace"
+              label="Адрес"
+              placeholder="Адрес"
+              clearable
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4">
+              <v-select label="Дата" variant="underlined"
+                :items="newDate" 
+                return-object
+                @update:modelValue="setDate"
+              ></v-select>
+          </v-col>
+          <v-col cols="4">
+              <v-select label="Время" variant="underlined"
+                :items="newTime" 
+                return-object
+                @update:modelValue="setTime"
+              ></v-select>
+          </v-col>
+          <v-col>
+            <v-file-input @change="getImg" clearable label="Загрузить файл"></v-file-input>
+          </v-col>
+          </v-row>
+          <v-btn @click="newMeetup">Добавить</v-btn>
+          </form>
+
           <v-row class="justify-space-between align-center flex-wrap tools">
             <v-col class="toggle-btns">
               <v-btn-toggle color="deep-purple-darken-4" group mandatory>
