@@ -103,7 +103,9 @@ const params = reactive({
 
 const showForm = function() {
   let form = document.querySelector('.new-item-form');
+  let btn = document.querySelector('.v-toolbar ion-icon');
   form.classList.toggle('d-none');
+  btn.classList.toggle('rotate');
   getDates()
 }
 const getDates = function() {
