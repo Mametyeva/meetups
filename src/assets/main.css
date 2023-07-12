@@ -31,12 +31,6 @@ ion-icon {
   min-width: 22px;
 }
 
-h1 {
-  margin-left: auto;
-  margin-right: auto;
-  width: 100vw;
-}
-
 h6 {
   font-size: 1.35em;
   line-height: 1.55em;
@@ -52,6 +46,20 @@ h6 {
 
 .v-select {
   min-width: 124px;
+}
+
+header.v-toolbar {
+  width: 100vw;
+}
+
+header.v-toolbar ion-icon {
+  font-size: 30px;
+}
+
+header.v-toolbar button {
+  padding: 0;
+  margin-left: 10px;
+  margin-top: 4px;
 }
 
 footer {
@@ -84,6 +92,11 @@ footer {
 
 .v-toolbar__content {
   justify-content: center;
+}
+
+.title {
+  margin: 0px;
+  width: auto;
 }
 
 @media (hover: hover) {

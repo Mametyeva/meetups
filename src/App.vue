@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, reactive, computed } from "vue";
 const meetups = ref([
   {
     id: 1,
@@ -90,22 +90,22 @@ const formatDate = function(date) {
 }
 
 //Форма создания митапа
-const newTime = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-const newName = ref('')
-const newAuthor = ref('')
-const newPlace = ref('')
-const newDate = ref([])
-let newImg
-
-const getImg = function(e) {
-  newImg = e.target.files[0];
-  return newImg
-}
-
-const fileURL = computed(() => {
-  return URL.createObjectURL(newImg)
+const params = reactive({
+  time: ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'],
+  name: '',
+  author: '',
+  place: '',
+  date: [],
+  dayUTC: '',
+  timeUTC: '',
+  img: '',
 })
 
+const showForm = function() {
+  let form = document.querySelector('.new-item-form');
+  form.classList.toggle('d-none');
+  getDates()
+}
 const getDates = function() {
  let currentDate = new Date();
  for (let i = 0; i < 30; i++) {
@@ -118,50 +118,51 @@ const getDates = function() {
   day = day < 10 ? '0' + day : day;
 
   let date = `${day}.${month}.${year}`
-  newDate.value.push(date)
+  params.date.push(date)
  }
 }
 
-let dayUTC
-const setDate = function(d) {
-  dayUTC = `20${d.split('.').reverse().join('-')}`;
-  return dayUTC
-}
+const setDate = (d) => params.dayUTC = `20${d.split('.').reverse().join('-')}`;
+const setTime = (t) => params.timeUTC = `T${t}:00.000`;
+const getImg = (e) => params.img = e.target.files[0];
 
-let timeUTC
-const setTime = function(t) {
-  timeUTC = `T${t}:00.000`;
-  return timeUTC
-}
+const fileURL = computed(() => {
+  return URL.createObjectURL(params.img)
+})
 
-const newMeetup = function() {
+const makeNewMeetup = function() {
   let i = meetups.value.length;
   let newM = {
     id: i + 1,
     img: fileURL,
-    name: newName.value,
-    author: newAuthor.value,
-    place: newPlace.value,
-    date: `${dayUTC}${timeUTC}`,
+    name: params.name,
+    author: params.author,
+    place: params.place,
+    date: `${params.dayUTC}${params.timeUTC}`
   };
-  meetups.value.push(newM)
+  meetups.value.push(newM);
+  alert('Успех!')
 }
 </script>
 
 <template>
   <v-app class="d-block text-center bg-grey-lighten-5 mx-auto">
-    <v-card class="mb-5">
-      <h1 class="pa-2">Meetups</h1>
+    <v-card>
+      <v-toolbar color="white">
+        <h1 class="title">Meetups</h1>
+        <v-btn color="primary" @click="showForm()">
+          <ion-icon name="add-circle"></ion-icon>
+        </v-btn>
+      </v-toolbar>
     </v-card>
-    <v-row>
+    <v-row class="new-item-form d-none mt-5">
       <v-col cols="12" md="10" class="mx-auto">
         <v-container fluid>
           <form>
           <v-row>
-          <v-btn @click="getDates()">Создать митап</v-btn>
           <v-col cols="12">
             <v-text-field
-              v-model="newName"
+              v-model="params.name"
               label="Название митапа"
               placeholder="Название"
               clearable
@@ -169,7 +170,7 @@ const newMeetup = function() {
           </v-col>
           <v-col cols="12">
             <v-text-field
-              v-model="newAuthor"
+              v-model="params.author"
               label="Имя лектора"
               placeholder="Фамилия Имя Отчество"
               clearable
@@ -177,22 +178,22 @@ const newMeetup = function() {
           </v-col>
           <v-col cols="12">
             <v-text-field
-              v-model="newPlace"
+              v-model="params.place"
               label="Адрес"
               placeholder="Адрес"
               clearable
             ></v-text-field>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" sm="6" md="4">
               <v-select label="Дата" variant="underlined"
-                :items="newDate" 
+                :items="params.date" 
                 return-object
                 @update:modelValue="setDate"
               ></v-select>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" sm="6" md="4">
               <v-select label="Время" variant="underlined"
-                :items="newTime" 
+                :items="params.time" 
                 return-object
                 @update:modelValue="setTime"
               ></v-select>
@@ -201,9 +202,14 @@ const newMeetup = function() {
             <v-file-input @change="getImg" clearable label="Загрузить файл"></v-file-input>
           </v-col>
           </v-row>
-          <v-btn @click="newMeetup">Добавить</v-btn>
+          <v-btn @click="makeNewMeetup" class="mt-5" block>Добавить</v-btn>
           </form>
-
+        </v-container>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="10" class="mx-auto">
+        <v-container fluid>
           <v-row class="justify-space-between align-center flex-wrap tools">
             <v-col class="toggle-btns">
               <v-btn-toggle color="deep-purple-darken-4" group mandatory>
@@ -264,7 +270,7 @@ const newMeetup = function() {
 
     <v-footer class="mt-5 pa-3" color="grey-darken-3">
       <v-row>
-        <v-col class="ml-auto" cols="auto">
+        <v-col class="ml-auto mr-md-5" cols="auto">
           <div>&copy; {{ new Date().getFullYear() }}</div>
         </v-col>
       </v-row>
