@@ -23,7 +23,7 @@ const meetups = ref([
     name: "Верстка на таблицах и другие ископаемые",
     author: "Григорий Иванович Ваганов",
     place: "ул.Петухова 50к1, каб.24",
-    date: "2023-07-20T20:00:00.000",
+    date: "2023-06-20T20:00:00.000",
   },
   {
     id: 4,
@@ -90,15 +90,16 @@ const formatDate = function(date) {
 }
 
 //Форма создания митапа
+const defaultImg = 'https://248006.selcdn.ru/main/iblock/ea6/ea64f829f84bb7f85ab9f17e351bee1a/4e7feedfb613f035e3c819921a2eec86.png';
 const params = reactive({
   time: ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'],
-  name: '',
+  name: null,
   author: '',
   place: '',
   date: [],
   dayUTC: '',
   timeUTC: '',
-  img: '',
+  img: defaultImg,
 })
 
 const showForm = function() {
@@ -108,6 +109,7 @@ const showForm = function() {
   btn.classList.toggle('rotate');
   getDates()
 }
+
 const getDates = function() {
  let currentDate = new Date();
  for (let i = 0; i < 30; i++) {
@@ -119,31 +121,48 @@ const getDates = function() {
   month = month < 10 ? '0' + month : month;
   day = day < 10 ? '0' + day : day;
 
-  let date = `${day}.${month}.${year}`
+  let date = `${day}.${month}.${year}`;
   params.date.push(date)
  }
 }
 
-const setDate = (d) => params.dayUTC = `20${d.split('.').reverse().join('-')}`;
+const setDate = (d) => d ? params.dayUTC = `20${d.split('.').reverse().join('-')}` : params.dayUTC = null;
 const setTime = (t) => params.timeUTC = `T${t}:00.000`;
-const getImg = (e) => params.img = e.target.files[0];
+const setImg = (e) => params.img = URL.createObjectURL(e.target.files[0]);
 
-const fileURL = computed(() => {
-  return URL.createObjectURL(params.img)
+const alert = reactive({
+  success: false,
+  error: false,
 })
 
+const checkForm = function() {
+  alert.success = false;
+  if (!params.dayUTC || !params.timeUTC) return alert.error = true;
+  return alert.error = false;
+}
+
+const hideAlerts = function() {
+  alert.error = false;
+  alert.success = false;
+}
+
 const makeNewMeetup = function() {
-  let i = meetups.value.length;
-  let newM = {
-    id: i + 1,
-    img: fileURL,
-    name: params.name,
-    author: params.author,
-    place: params.place,
-    date: `${params.dayUTC}${params.timeUTC}`
-  };
-  meetups.value.push(newM);
-  alert('Успех!')
+  checkForm();
+  if (!alert.error) {
+    let newM = {
+      id: meetups.value.length + 1,
+      img: params.img,
+      name: params.name,
+      author: params.author,
+      place: params.place,
+      date: `${params.dayUTC}${params.timeUTC}`
+    };
+    meetups.value.push(newM);
+    params.img = defaultImg;
+    alert.success = true;
+  } else {
+    return
+  }  
 }
 </script>
 
@@ -157,10 +176,23 @@ const makeNewMeetup = function() {
         </v-btn>
       </v-toolbar>
     </v-card>
+    <v-alert
+      v-model="alert.error"
+      type="error"
+    >
+      Выберите дату и время
+    </v-alert>
+    <v-alert
+      v-model="alert.success"
+      type="success"
+    >
+      Мероприятие успешно добавлено!
+    </v-alert>
+
     <v-row class="new-item-form d-none mt-5">
       <v-col cols="12" md="10" class="mx-auto">
         <v-container fluid>
-          <form>
+          <form @submit.prevent.stop="makeNewMeetup" @input="hideAlerts">
           <v-row>
           <v-col cols="12">
             <v-text-field
@@ -168,6 +200,7 @@ const makeNewMeetup = function() {
               label="Название митапа"
               placeholder="Название"
               clearable
+              required
             ></v-text-field>
           </v-col>
           <v-col cols="12">
@@ -176,6 +209,7 @@ const makeNewMeetup = function() {
               label="Имя лектора"
               placeholder="Фамилия Имя Отчество"
               clearable
+              required
             ></v-text-field>
           </v-col>
           <v-col cols="12">
@@ -184,6 +218,7 @@ const makeNewMeetup = function() {
               label="Адрес"
               placeholder="Адрес"
               clearable
+              required
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="6" md="4">
@@ -191,6 +226,7 @@ const makeNewMeetup = function() {
                 :items="params.date" 
                 return-object
                 @update:modelValue="setDate"
+                clearable
               ></v-select>
           </v-col>
           <v-col cols="12" sm="6" md="4">
@@ -198,13 +234,14 @@ const makeNewMeetup = function() {
                 :items="params.time" 
                 return-object
                 @update:modelValue="setTime"
+                clearable
               ></v-select>
           </v-col>
           <v-col>
-            <v-file-input @change="getImg" clearable label="Загрузить файл"></v-file-input>
+            <v-file-input @change="setImg" clearable label="Загрузить файл"></v-file-input>
           </v-col>
           </v-row>
-          <v-btn @click="makeNewMeetup" class="mt-5" block>Добавить</v-btn>
+          <v-btn type="submit" class="mt-5" color="primary">Добавить</v-btn>
           </form>
         </v-container>
       </v-col>
