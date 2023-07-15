@@ -127,7 +127,7 @@ const getDates = function() {
 }
 
 const setDate = (d) => d ? params.dayUTC = `20${d.split('.').reverse().join('-')}` : params.dayUTC = null;
-const setTime = (t) => params.timeUTC = `T${t}:00.000`;
+const setTime = (t) => t ? params.timeUTC = `T${t}:00.000` : params.timeUTC = null;
 const setImg = (e) => params.img = URL.createObjectURL(e.target.files[0]);
 
 const alert = reactive({
@@ -160,6 +160,7 @@ const makeNewMeetup = function() {
     meetups.value.push(newM);
     params.img = defaultImg;
     alert.success = true;
+    setTimeout(hideAlerts, 2000)
   } else {
     return
   }  
@@ -168,7 +169,7 @@ const makeNewMeetup = function() {
 
 <template>
   <v-app class="d-block text-center bg-grey-lighten-5 mx-auto">
-    <v-card>
+    <v-card class="rounded-0">
       <v-toolbar color="white">
         <h1 class="title">Meetups</h1>
         <v-btn color="primary" @click="showForm()">
@@ -177,14 +178,16 @@ const makeNewMeetup = function() {
       </v-toolbar>
     </v-card>
     <v-alert
+      class="rounded-0"
       v-model="alert.error"
-      type="error"
+      color="error"
     >
       Выберите дату и время
     </v-alert>
     <v-alert
+      class="rounded-0"
       v-model="alert.success"
-      type="success"
+      color="success"
     >
       Мероприятие успешно добавлено!
     </v-alert>
