@@ -70,6 +70,18 @@ footer {
   max-height: 220px;
 }
 
+.description {
+  display: none;
+}
+
+.photo:hover .description {
+  display: block;
+}
+
+.photo:hover .title {
+  display: none;
+}
+
 .search .v-field__field::after {
   position: relative;
   margin-top: 15px;
@@ -107,6 +119,8 @@ footer {
 .new-item-form button {
   width: 300px;
 }
+
+
 
 @media (hover: hover) {
   a:hover {

@@ -1,5 +1,7 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
+import MeetupCards from "./components/MeetupCards.vue";
+
 const meetups = ref([
   {
     id: 1,
@@ -44,7 +46,7 @@ const meetups = ref([
 ]);
 
 let items = ref(meetups.value);
-const inputValue = ref(null)
+const inputValue = ref(null);
 
 const filteredItems = computed(() => {
   if (inputValue.value) {
@@ -52,7 +54,7 @@ const filteredItems = computed(() => {
       (item) => item.name.startsWith(inputValue.value) || item.name.toLowerCase().startsWith(inputValue.value))
   }
   return items.value
-})
+});
 
 const filterBy = function(value) {
   value === "allDate" ? items.value = meetups.value :
@@ -72,7 +74,7 @@ const sortBy = function(sortValue) {
     sortValue === 'По названию' ? items.value.sort(sortByName) :
       sortValue === 'По имени' ? items.value.sort(sortByAuthor) :
       items.value
-}
+};
 
 const formatDate = function(date) {
   let year = date.getFullYear().toString().slice(-2);
@@ -87,20 +89,26 @@ const formatDate = function(date) {
   minutes = minutes < 10 ? '0' + minutes : minutes;
 
   return `${day}.${month}.${year} ${hour}:${minutes}`
-}
+};
 
 //Форма создания митапа
-const defaultImg = 'https://248006.selcdn.ru/main/iblock/ea6/ea64f829f84bb7f85ab9f17e351bee1a/4e7feedfb613f035e3c819921a2eec86.png';
-const params = reactive({
+//const defaultImg = 'https://248006.selcdn.ru/main/iblock/ea6/ea64f829f84bb7f85ab9f17e351bee1a/4e7feedfb613f035e3c819921a2eec86.png';
+const defaultParams = {
   time: ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'],
-  name: null,
+  img: 'https://248006.selcdn.ru/main/iblock/ea6/ea64f829f84bb7f85ab9f17e351bee1a/4e7feedfb613f035e3c819921a2eec86.png',
+  description: 'Автор не добавил описание - приходите и все узнаете :)'
+}
+const params = reactive({
+  //time: ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30'],
+  name: '',
+  description: '',
   author: '',
   place: '',
   date: [],
   dayUTC: '',
   timeUTC: '',
-  img: defaultImg,
-})
+  img: defaultParams.img,
+});
 
 const showForm = function() {
   let form = document.querySelector('.new-item-form');
@@ -108,7 +116,7 @@ const showForm = function() {
   form.classList.toggle('d-none');
   btn.classList.toggle('rotate');
   getDates()
-}
+};
 
 const getDates = function() {
  let currentDate = new Date();
@@ -124,7 +132,7 @@ const getDates = function() {
   let date = `${day}.${month}.${year}`;
   params.date.push(date)
  }
-}
+};
 
 const setDate = (d) => d ? params.dayUTC = `20${d.split('.').reverse().join('-')}` : params.dayUTC = null;
 const setTime = (t) => t ? params.timeUTC = `T${t}:00.000` : params.timeUTC = null;
@@ -133,18 +141,23 @@ const setImg = (e) => params.img = URL.createObjectURL(e.target.files[0]);
 const alert = reactive({
   success: false,
   error: false,
-})
+});
+
+const hideAlerts = function() {
+  alert.error = false;
+  alert.success = false;
+};
 
 const checkForm = function() {
   alert.success = false;
   if (!params.dayUTC || !params.timeUTC) return alert.error = true;
   return alert.error = false;
-}
+};
 
-const hideAlerts = function() {
-  alert.error = false;
-  alert.success = false;
-}
+const resetForm = function() {
+  let form = document.getElementsByTagName('form');
+  form[0].reset()
+};
 
 const makeNewMeetup = function() {
   checkForm();
@@ -153,18 +166,22 @@ const makeNewMeetup = function() {
       id: meetups.value.length + 1,
       img: params.img,
       name: params.name,
+      description: params.description,
       author: params.author,
       place: params.place,
       date: `${params.dayUTC}${params.timeUTC}`
     };
     meetups.value.push(newM);
-    params.img = defaultImg;
+    params.img = defaultParams.img;
+    params.description = '';
     alert.success = true;
-    setTimeout(hideAlerts, 2000)
+    resetForm();
+    setTimeout(hideAlerts, 2000);
   } else {
     return
   }  
-}
+};
+
 </script>
 
 <template>
@@ -208,6 +225,15 @@ const makeNewMeetup = function() {
           </v-col>
           <v-col cols="12">
             <v-text-field
+              v-model="params.description"
+              label="Описание"
+              placeholder="Подробнее о мероприятии"
+              counter="125"
+              clearable
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
               v-model="params.author"
               label="Имя лектора"
               placeholder="Фамилия Имя Отчество"
@@ -234,7 +260,7 @@ const makeNewMeetup = function() {
           </v-col>
           <v-col cols="12" sm="6" md="4">
               <v-select label="Время" variant="underlined"
-                :items="params.time" 
+                :items="defaultParams.time" 
                 return-object
                 @update:modelValue="setTime"
                 clearable
@@ -280,32 +306,15 @@ const makeNewMeetup = function() {
             </v-col>
           </v-row>
 
-          <v-card class="mb-3" v-for="item in filteredItems" :key="item.id">
-            <v-row class="card align-center">
-              <v-col class="card-img" cols="12" md="6">
-                <v-img class="d-flex align-center pa-4 photo" cover :src="item.img"
-                  gradient="to top right, rgba(100,115,201,.53), rgba(25,32,72,1)">
-                  <p class="text-h6 text-sm-h5 white-text font-weight-light">{{ item.name }}</p>
-                </v-img>
-              </v-col>
-              <v-col class="card-content" cols="12" md="6">
-                <div class="text-left pa-3 pa-sm-5">
-                  <v-card-text class="d-flex align-top align-lg-center py-1">
-                    <ion-icon name="person-outline" class="pr-2 pr-sm-3"></ion-icon>
-                    <h6 class="d-inline font-weight-light">{{ item.author }}</h6>
-                  </v-card-text>
-                  <v-card-text class="d-flex align-top align-lg-center py-1">
-                    <ion-icon name="location-outline" class="pr-2 pr-sm-3"></ion-icon>
-                    <h6 class="d-inline font-weight-light">{{ item.place }}</h6>
-                  </v-card-text>
-                  <v-card-text class="d-flex align-top align-lg-center py-1">
-                    <ion-icon name="calendar-clear-outline" class="pr-2 pr-sm-3"></ion-icon>
-                    <h6 class="d-inline font-weight-light">{{ formatDate(new Date(item.date)) }}</h6>
-                  </v-card-text>
-                </div>
-              </v-col>
-            </v-row>
-          </v-card>
+          <meetup-cards v-for="item in filteredItems" :key="item.id"
+          :src="item.img"
+          :alt="item.name"
+          :name="item.name"
+          :description="item.description ? item.description : defaultParams.description"
+          :author="item.author"
+          :place="item.place"
+          :date="formatDate(new Date(item.date))"
+          />
         </v-container>
       </v-col>
     </v-row>
